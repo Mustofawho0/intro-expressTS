@@ -66,18 +66,36 @@ app.delete("/users/:id", (req: Request, res: Response) => {
 
 app.put("/users/:id", (req: Request, res: Response) => {
   try {
-    const { id } = req.params
-    const db = ReadFile()
-    const user: IUserJSON[] = db.users.map((updatedUser: IUserJSON ) =>{
-        if(updatedUser.id === Number(id)){
-            return {
-                ...user,
-                ...req.body
-            }
-        }
-    })
-    WriteFile(db)
-    return res.send("Data Update")
+    const { id } = req.params;
+    const db = ReadFile();
+    const users: IUserJSON[] = db.users;
+    // const updatedUser = users.map((user) => {
+    //   return user.id === Number(id) ? { ...user, ...req.body } : user;
+    // });
+    // db.users = updatedUser;
+
+    // const {username, email, password} = req.body
+    // if (!username || !email || !password) throw new Error('Data not Complete!')
+    // const indexOfUser = users.findIndex((user) => user.id === Number(id));
+    // if (indexOfUser === -1) throw new Error(`User with ID ${id} Not Found`);
+    // users[indexOfUser] = {
+    //   id: users[indexOfUser].id,
+    //   username: req.body.username,
+    //   email: req.body.email,
+    //   password: req.body.password,
+    // };
+
+    const { username, email, password} = req.body
+    for(let user of users){
+      if(user.id === Number(id)){
+        user.username = username,
+        user.email = email,
+        user.password = password
+      }
+    }
+
+    WriteFile(db);
+    return res.send(`Data with ID ${id} Updated Success`);
   } catch (error) {
     console.log(error);
   }
